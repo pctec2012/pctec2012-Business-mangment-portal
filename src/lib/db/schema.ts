@@ -1,8 +1,26 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
+// Companies table - supports multi-company architecture
+export const companies = sqliteTable('companies', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
+  description: text('description'),
+  logo: text('logo'),
+  website: text('website'),
+  phone: text('phone'),
+  email: text('email'),
+  address: text('address'),
+  timezone: text('timezone').notNull().default('UTC'),
+  currency: text('currency').notNull().default('USD'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
 // Users table for authentication
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
+  companyId: integer('company_id').notNull().references(() => companies.id),
   email: text('email').notNull().unique(),
   password: text('password').notNull(),
   firstName: text('first_name').notNull(),
@@ -15,6 +33,7 @@ export const users = sqliteTable('users', {
 // Employees table
 export const employees = sqliteTable('employees', {
   id: integer('id').primaryKey({ autoIncrement: true }),
+  companyId: integer('company_id').notNull().references(() => companies.id),
   userId: integer('user_id').references(() => users.id),
   name: text('name').notNull(),
   email: text('email').notNull(),
@@ -31,6 +50,7 @@ export const employees = sqliteTable('employees', {
 // Projects table
 export const projects = sqliteTable('projects', {
   id: integer('id').primaryKey({ autoIncrement: true }),
+  companyId: integer('company_id').notNull().references(() => companies.id),
   name: text('name').notNull(),
   client: text('client').notNull(),
   description: text('description'),
@@ -47,6 +67,7 @@ export const projects = sqliteTable('projects', {
 // Tasks table
 export const tasks = sqliteTable('tasks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
+  companyId: integer('company_id').notNull().references(() => companies.id),
   title: text('title').notNull(),
   description: text('description'),
   projectId: integer('project_id').references(() => projects.id),
@@ -61,6 +82,7 @@ export const tasks = sqliteTable('tasks', {
 // Clients table
 export const clients = sqliteTable('clients', {
   id: integer('id').primaryKey({ autoIncrement: true }),
+  companyId: integer('company_id').notNull().references(() => companies.id),
   company: text('company').notNull(),
   contactPerson: text('contact_person').notNull(),
   email: text('email').notNull(),
@@ -78,6 +100,7 @@ export const clients = sqliteTable('clients', {
 // Transactions table
 export const transactions = sqliteTable('transactions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
+  companyId: integer('company_id').notNull().references(() => companies.id),
   date: integer('date', { mode: 'timestamp' }).notNull(),
   description: text('description').notNull(),
   type: text('type').notNull(),
@@ -95,6 +118,8 @@ export const projectTeamMembers = sqliteTable('project_team_members', {
 });
 
 // Type exports
+export type Company = typeof companies.$inferSelect;
+export type NewCompany = typeof companies.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Employee = typeof employees.$inferSelect;
