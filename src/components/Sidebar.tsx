@@ -12,10 +12,12 @@ import {
   IconDollarSign,
   IconChevronLeft,
   IconChevronRight,
+  IconBuilding,
 } from './Icons';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: IconDashboard },
+  { href: '/company', label: 'Company Profile', icon: IconBuilding },
   { href: '/employees', label: 'Employees', icon: IconUsers },
   { href: '/projects', label: 'Projects', icon: IconFolder },
   { href: '/tasks', label: 'Tasks', icon: IconCheckSquare },
